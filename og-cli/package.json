@@ -1,6 +1,6 @@
 {
   "name": "opengate-cli",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "",
   "main": "./bin/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "keywords": [
     "cli"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "@troddenspade",
+  "license": "Apache License 2.0",
   "bugs": {
     "url": "https://github.com/TroddenSpade/OpenGate/issues"
   },

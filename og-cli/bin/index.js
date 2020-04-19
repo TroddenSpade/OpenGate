@@ -9,6 +9,7 @@ const ora = require("ora");
 const readline = require("readline");
 const inquirer = require("inquirer");
 const fs = require("fs");
+const { spawn, exec } = require("child_process");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -31,6 +32,12 @@ const desc = chalk.white(
 );
 
 function selectVpn() {
+  exec(`rm -f ${__dirname}/../*.ovpn`, function (error, stdout, stderr) {
+    if (error) {
+      console.log(error);
+    }
+  });
+
   inquirer
     .prompt([
       {
@@ -40,17 +47,6 @@ function selectVpn() {
         validate: function (value) {
           var no = parseInt(value.match(/^[0-9]*$/));
           if (no && no <= LIST.length && no > 0) {
-            fs.writeFile(
-              `./${LIST[no - 1]["#HostName"]}.ovpn`,
-              LIST[no - 1]["OpenVPN_ConfigData_Base64"],
-              function (err) {
-                if (err) {
-                  return console.log(err);
-                }
-
-                // run .ovpn file
-              }
-            );
             return true;
           }
 
@@ -58,8 +54,34 @@ function selectVpn() {
         },
       },
     ])
-    .then((answers) => {
-      console.log(JSON.stringify(answers, null, "  "));
+    .then((answer) => {
+      let no = answer.id;
+
+      fs.writeFile(
+        `${__dirname}/../${LIST[no - 1]["#HostName"]}.ovpn`,
+        Buffer.from(
+          LIST[no - 1]["OpenVPN_ConfigData_Base64"],
+          "base64"
+        ).toString("ascii"),
+        function (err) {
+          if (err) {
+            return console.log(err);
+          }
+
+          ls = spawn("sudo", [
+            "openvpn",
+            `${__dirname}/../${LIST[no - 1]["#HostName"]}.ovpn`,
+          ]);
+
+          ls.stdout.on("data", function (data) {
+            console.log(data.toString());
+          });
+
+          ls.stderr.on("data", function (data) {
+            console.log("stderr: " + data.toString());
+          });
+        }
+      );
     });
 }
 
