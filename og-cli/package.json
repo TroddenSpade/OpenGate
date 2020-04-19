@@ -1,0 +1,34 @@
+{
+  "name": "opengate-cli",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "opengate": "./bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TroddenSpade/OpenGate.git"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TroddenSpade/OpenGate/issues"
+  },
+  "homepage": "https://github.com/TroddenSpade/OpenGate#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "chalk": "^4.0.0",
+    "clear": "^0.1.0",
+    "cli-table": "^0.3.1",
+    "figlet": "^1.3.0",
+    "inquirer": "^7.1.0",
+    "ora": "^4.0.3"
+  }
+}
