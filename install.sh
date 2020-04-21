@@ -15,7 +15,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Run 'sudo opengate' Command"
 elif [[ "$OSTYPE" == "darwin"* ]] ; then
     if ! [ -x "$(command -v npm)" ]; then
-        echo "install node.js";
+        brew install node
     fi
     if ! [ -x "$(command -v openvpn)" ]; then
         brew install openvpn
