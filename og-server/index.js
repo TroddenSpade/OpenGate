@@ -22,10 +22,10 @@ app.get("/list", async (req, res) => {
   if (list == undefined) {
     let csvList = await getCVSList();
     let jsonList = CSVtoJson(csvList);
-    let success = List.set("LIST", jsonList, 600);
-    return res.send({ success: success, list: jsonList });
+    let success = List.set("LIST", jsonList, 300);
+    return res.json({ success: success, list: jsonList });
   }
-  return res.send({ success: null, list: list });
+  return res.json({ success: null, list: list });
 });
 
 async function getCVSList() {
@@ -49,3 +49,9 @@ function CSVtoJson(csv) {
 
   return JSON.stringify(result);
 }
+
+setInterval(async () => {
+  let csvList = await getCVSList();
+  let jsonList = CSVtoJson(csvList);
+  List.set("LIST", jsonList, 300);
+}, 1000 * 2 * 60);
