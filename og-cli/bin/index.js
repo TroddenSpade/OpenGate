@@ -27,8 +27,12 @@ const logo = chalk.magenta(
   })
 );
 
+const title = chalk.magenta.bold(
+  "Command-line Client for the VPN Gate Project."
+);
+
 const desc = chalk.white(
-  "In United States, Japan and most Europian countries, people do not let their governments placing such firewall, as their Constitutions state. However, it is said that some other countries have such firewall for the sake of censorship."
+  "VPN Gate Academic Experiment Project is an online service as an academic research at Graduate School of University of Tsukuba, Japan. The purpose of this research is to expand the knowledge of 'Global Distributed Public VPN Relay Servers' ."
 );
 
 function selectVpn() {
@@ -94,6 +98,7 @@ async function printPage(page) {
   if (page < 0) page = 0;
   clear();
   console.log(logo + "\n");
+  console.log(title);
   console.log(desc + "\n");
 
   const spinner = ora({ text: "Loading Servers", discardStdin: false }).start();
