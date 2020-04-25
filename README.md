@@ -34,7 +34,15 @@ npm i -g opengate-cli
 ### Usage
 
 ```
-opengate
+$ opengate -h
+Usage: opengate [options]
+
+Options:
+  --version, -V     Show version number                                [boolean]
+  --help, -h        Show help                                          [boolean]
+  --background, -B  run vpn in background
+  --reconnect, -R   reconnect to last openvpn server
+
 ```
 
 ## Contributing
