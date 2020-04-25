@@ -6,10 +6,27 @@ const figlet = require("figlet");
 const axios = require("axios");
 const Table = require("cli-table");
 const ora = require("ora");
+const yargs = require("yargs");
 const readline = require("readline");
 const inquirer = require("inquirer");
 const fs = require("fs");
 const { spawn, exec } = require("child_process");
+
+const argv = yargs
+  .usage("Usage: opengate [options]")
+  .help("help")
+  .alias("help", "h")
+  .alias("version", "V")
+  .options({
+    background: {
+      alias: "B",
+      description: "run vpn in background",
+    },
+    reconnect: {
+      alias: "R",
+      description: "reconnect to last openvpn server",
+    },
+  }).argv;
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -71,22 +88,34 @@ function selectVpn() {
           if (err) {
             return console.log(err);
           }
-
-          ls = spawn("sudo", [
-            "openvpn",
-            `${__dirname}/../${LIST[no - 1]["#HostName"]}.ovpn`,
-          ]);
-
-          ls.stdout.on("data", function (data) {
-            console.log(data.toString());
-          });
-
-          ls.stderr.on("data", function (data) {
-            console.log("stderr: " + data.toString());
-          });
+          runOpenVpn(LIST[no - 1]["#HostName"] + ".ovpn");
         }
       );
     });
+}
+
+function runOpenVpn(filename) {
+  let options = ["openvpn", "--config", `${__dirname}/../${filename}`];
+
+  if (argv.background) {
+    options = [
+      "openvpn",
+      "--config",
+      `${__dirname}/../${filename}`,
+      "--log",
+      "out.log",
+    ];
+  }
+
+  ls = spawn("sudo", options);
+
+  ls.stdout.on("data", function (data) {
+    console.log(data.toString());
+  });
+
+  ls.stderr.on("data", function (data) {
+    console.log("stderr: " + data.toString());
+  });
 }
 
 async function printPage(page) {
@@ -104,7 +133,7 @@ async function printPage(page) {
   const spinner = ora({ text: "Loading Servers", discardStdin: false }).start();
 
   setTimeout(() => {
-    spinner.color = "red";
+    spinner.color = "magenta";
     spinner.text = "Loading Servers";
   }, 1000);
 
@@ -158,6 +187,11 @@ async function printPage(page) {
 }
 
 async function main() {
+  if (argv.reconnect) {
+    return exec("ls | grep ovpn", (err, stdout, stderr) => {
+      return runOpenVpn(stdout.trim());
+    });
+  }
   printPage(0);
 }
 
