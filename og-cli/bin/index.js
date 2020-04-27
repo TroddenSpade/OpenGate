@@ -16,15 +16,23 @@ const argv = yargs
   .usage("Usage: opengate [options]")
   .help("help")
   .alias("help", "h")
-  .alias("version", "V")
+  .alias("version", "v")
   .options({
     background: {
-      alias: "B",
+      alias: "b",
       description: "run vpn in background",
     },
     reconnect: {
-      alias: "R",
+      alias: "r",
       description: "reconnect to last openvpn server",
+    },
+    log: {
+      alias: "l",
+      description: "openvpn logs",
+    },
+    kill: {
+      alias: "k",
+      description: "kill openvpn's backgound process",
     },
   }).argv;
 
@@ -53,7 +61,11 @@ const desc = chalk.white(
 );
 
 function selectVpn() {
-  exec(`rm -f ${__dirname}/../*.ovpn`, function (error, stdout, stderr) {
+  exec(`rm -f ${__dirname}/../configs/*.ovpn`, function (
+    error,
+    stdout,
+    stderr
+  ) {
     if (error) {
       console.log(error);
     }
@@ -79,7 +91,7 @@ function selectVpn() {
       let no = answer.id;
 
       fs.writeFile(
-        `${__dirname}/../${LIST[no - 1]["#HostName"]}.ovpn`,
+        `${__dirname}/../configs/${LIST[no - 1]["#HostName"]}.ovpn`,
         Buffer.from(
           LIST[no - 1]["OpenVPN_ConfigData_Base64"],
           "base64"
@@ -95,15 +107,16 @@ function selectVpn() {
 }
 
 function runOpenVpn(filename) {
-  let options = ["openvpn", "--config", `${__dirname}/../${filename}`];
+  let options = ["openvpn", "--config", `${__dirname}/../configs/${filename}`];
 
   if (argv.background) {
     options = [
       "openvpn",
+      "--daemon",
       "--config",
-      `${__dirname}/../${filename}`,
+      `${__dirname}/../configs/${filename}`,
       "--log",
-      "out.log",
+      `${__dirname}/../logs/out.log`,
     ];
   }
 
@@ -187,11 +200,40 @@ async function printPage(page) {
 }
 
 async function main() {
-  if (argv.reconnect) {
-    return exec("ls | grep ovpn", (err, stdout, stderr) => {
-      return runOpenVpn(stdout.trim());
+  if (argv.kill) {
+    return exec(`sudo pkill openvpn`, (err, stdout, stderr) => {
+      if (stderr || err) {
+        console.log(stderr);
+        return process.exit();
+      }
+      console.log(stdout);
+      return process.exit();
     });
   }
+
+  if (argv.log) {
+    return exec(
+      `sudo cat ${__dirname}/../logs/out.log`,
+      (err, stdout, stderr) => {
+        if (stderr || err) {
+          console.log("No such file");
+          return process.exit();
+        }
+        console.log(stdout);
+        return process.exit();
+      }
+    );
+  }
+
+  if (argv.reconnect) {
+    return exec(
+      `ls ${__dirname}/../configs | grep ovpn`,
+      (err, stdout, stderr) => {
+        return runOpenVpn(stdout.trim());
+      }
+    );
+  }
+
   printPage(0);
 }
 
