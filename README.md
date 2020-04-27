@@ -38,10 +38,12 @@ $ opengate -h
 Usage: opengate [options]
 
 Options:
-  --version, -V     Show version number                                [boolean]
+  --version, -v     Show version number                                [boolean]
   --help, -h        Show help                                          [boolean]
-  --background, -B  run vpn in background
-  --reconnect, -R   reconnect to last openvpn server
+  --background, -b  run vpn in background
+  --reconnect, -r   reconnect to last openvpn server
+  --log, -l         openvpn logs
+  --kill, -k        kill openvpn's backgound process
 
 ```
 
